@@ -1,34 +1,38 @@
 import { Injectable } from '@angular/core';
-import { Region, SmallCountry } from '../interfaces/country.interface';
-import { Observable, of, tap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+
+import { Country, Region, SmallCountry } from '../interfaces/country.interface';
+import { Observable, combineLatest, map, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CountriesService {
 
-  private baseUrl: string = "https://restcountries.com/v3.1"
+  private baseUrl: string = 'https://restcountries.com/v3.1';
 
-  private _regions: Region[] = [Region.Africa, Region.America, Region.Asia, Region.Europa, Region.Oceania]
+  private _regions: Region[] = [Region.Africa, Region.Americas, Region.Asia, Region.Europe, Region.Oceania];
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient
+  ) { }
 
   get regions(): Region[] {
-    return [... this._regions]
+    return [...this._regions];
   }
 
   getCountriesByRegion(region: Region): Observable<SmallCountry[]> {
-    if (!region) {
-      // Ponemos of por que necesitamos que sera un arreglo vacio pero que no de problema con el observable
-      return of([])
-    }
-    const url: string = `${this.baseUrl}/region/${region}?fields=cca3,name,borders`
+    if (!region) return of([]);
 
-    return this.http.get<SmallCountry[]>(url)
+    const url: string = `${this.baseUrl}/region/${region}?fields=cca3,name,borders`;
+
+    return this.http.get<Country[]>(url)
       .pipe(
-        tap(response => console.log(response))
+        map(countries => countries.map(country => ({
+          name: country.name.common,
+          cca3: country.cca3,
+          borders: country.borders ?? []
+        }))),
       )
   }
-
 }
