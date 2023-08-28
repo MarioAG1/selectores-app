@@ -49,4 +49,17 @@ export class CountriesService {
         }))
       )
   }
+
+  getCountriesBorderByCodes(borders: string[]): Observable<SmallCountry[]> {
+
+    if (!borders || borders.length === 0) return of([]);
+
+    const countriesRequests: Observable<SmallCountry>[] = []
+
+    borders.forEach(code => {
+      const request = this.getCountriesByAlphaCode(code)
+      countriesRequests.push(request)
+    })
+    return combineLatest(countriesRequests)
+  }
 }
