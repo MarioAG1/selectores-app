@@ -28,8 +28,8 @@
       </select>
     </div>
   </div>
-  <!-- Countries -->
-  <div class="row mb-3">
+  <!-- Fronteras -->
+  <div class="row mb-3" *ngIf="countriesByRegion.length > 0 && borders.length > 0 ">
     <div class="col">
       <label for="form-label">Fronteras:</label>
       <select class="form-control" formControlName="border">
